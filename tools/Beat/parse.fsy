@@ -1,8 +1,8 @@
 %{
 
 open Ast;;
+open Compat;;
 open Parse_util;;
-open Microsoft.FSharp.Compatibility.OCaml.Big_int;;
 
 %}
 
@@ -212,5 +212,3 @@ Decl
 Decls
   : { [] }
   | Decl Decls { $1::$2 }
-
-

@@ -1,7 +1,11 @@
 open Ast
+open Compat
 open Parse
 open Parse_util
-open Microsoft.FSharp.Compatibility.OCaml.Big_int;;
+open System
+open System.Numerics
+open System.IO
+open Microsoft.FSharp.Math
 
 type env =
   {
@@ -11,7 +15,7 @@ type env =
   }
 
 let build_env decls:env =
-  List.fold_left
+  List.fold
     (fun env (l, decl) ->
       match decl with
       | BFunDecl ((x, _, _, _) as d) -> {env with fun_decls = env.fun_decls.Add(x, (l, d))}
@@ -115,7 +119,7 @@ let subst_spec (m:Map<id,bexp>) (l:loc, s:bspec):(loc * bspec) =
 let id_is_reg (x:id) =
   match x with "eax" | "ebx" | "ecx" | "edx" | "esi" | "edi" | "ebp" | "esp" -> true | _ -> false
 
-let id_is_ghost (x:id) = x.[0] == '$'
+let id_is_ghost (x:id) = x.[0] = '$'
 
 type procKind = PIns | PInline | PProc
 
@@ -175,12 +179,12 @@ let rec expand_conjuncts_stmt (env:env) (depth:int) (l:loc, s:bstmt):(loc * bstm
   match s with
   | BIf (e, b1, b2) -> [(l, BIf (e, f b1, match b2 with None -> None | Some b2 -> Some (f b2)))]
   | BWhile (e, invs, b) ->
-      let invs = List.flatten (List.map (fun (l, e) -> list_of_conjuncts env depth l l e) invs) in
+      let invs = List.concat (List.map (fun (l, e) -> list_of_conjuncts env depth l l e) invs) in
       [(l, BWhile (e, invs, f b))]
   | BAssert e -> List.map (fun (l, e) -> (l, BAssert e)) (list_of_conjuncts env depth l l e)
   | _ -> [(l, s)]
 and expand_conjuncts_block (env:env) (depth:int) (b:bblock):bblock =
-  List.flatten (List.map (expand_conjuncts_stmt env depth) b)
+  List.concat (List.map (expand_conjuncts_stmt env depth) b)
 
 let expand_conjuncts_spec (env:env) (depth:int) (l:loc, s:bspec):(loc * bspec) list =
   match s with
@@ -192,7 +196,7 @@ let expand_conjuncts_decl (env:env) (depth:int) (l:loc, d:bdecl):(loc * bdecl) =
   match d with
   | BProcDecl (x, ps, specs, b, p) ->
       (l, BProcDecl (x, ps,
-        List.flatten (List.map (expand_conjuncts_spec env depth) specs),
+        List.concat (List.map (expand_conjuncts_spec env depth) specs),
         (match b with None -> None | Some b -> Some (expand_conjuncts_block env depth b)),
         p))
   | _-> (l, d)
@@ -430,7 +434,7 @@ let new_label:unit->id =
   fun () -> incr nextLabel; "__L" + (string !nextLabel)
 
 let add_local (locals:(id * bformal_typ) list ref) (x:id) (t:bformal_typ):unit =
-  if not (List.mem_assoc x !locals) then locals := (x, t)::(!locals);
+  if not (mem_assoc x !locals) then locals := (x, t)::(!locals);
 
 let tmp_var (i:int):id = "__tmp" + (string i)
 
@@ -549,7 +553,7 @@ let rec compile_stmt (env:env) (locals:(id * bformal_typ) list ref) (l:loc, s:bs
       let xes = List.map2 (fun (x, t) e -> (x, e)) ps es in
       let (gps, rps) = List.partition (fun (x, e) -> id_is_ghost x) xes in
       let assigns =
-        List.flatten
+        List.concat
           (List.map
             (fun (x, e) -> compile_stmt env locals (l, BAssign (global_param_name p x, e)))
             rps) in
@@ -597,7 +601,7 @@ and embellish_stmts (b:bblock):bblock =
   | h::t -> h::(embellish_stmts t)
 
 and compile_block (env:env) (locals:(id * bformal_typ) list ref) (b:bblock):bblock =
-  let b = List.flatten (List.map (compile_stmt env locals) b) in
+  let b = List.concat (List.map (compile_stmt env locals) b) in
   let b = embellish_stmts b in
   b
 
@@ -708,7 +712,7 @@ let compile_decl (env:env) (modify:id list ref) (l:loc, d:bdecl):(loc * bdecl) l
       let specs = List.map (map_spec (fun_defaults_exp env)) specs in
       let (gps, rps0) = List.partition (fun (x, _) -> id_is_ghost x) ps in
       let (rps, aps) =
-        List.fold_left
+        List.fold
           (fun (rps, aps) (x, t) ->
             match t with
             | BFormalType t -> ((x, t)::rps, aps)
@@ -737,7 +741,7 @@ let compile_decl (env:env) (modify:id list ref) (l:loc, d:bdecl):(loc * bdecl) l
       global_vars @ [(l, BProcDecl (x, gps, mSpec::specs, Some (bLocals @ b), p))]
   | _ -> [(l, d)]
 
-let compile_decls (env:env) ds = List.flatten (List.map (compile_decl env (ref ([]:id list))) ds)
+let compile_decls (env:env) ds = List.concat (List.map (compile_decl env (ref ([]:id list))) ds)
 
 (*****************************************************************************)
 
@@ -746,7 +750,7 @@ let include_files = ref ([]:string list)
 
 (* Each command-line argument is the name of a lemma *)
 let args =
-  [ 
+  [
     ("-expand"  , Arg.Int    (fun i -> expand_depth := i)  , "Expand formula definitions (for better error messages)")
     ("-i"       , Arg.String (fun s -> include_files := s::(!include_files)), "Include file")
   ]
@@ -757,16 +761,17 @@ let main (argv) =
     let cmd_args = System.Environment.GetCommandLineArgs () in
     Arg.parse_argv (ref 0) cmd_args args (fun _ -> ()) "error parsing arguments";
 
-    let parse_file name =
+    let parse_file (name:string) =
+      file := name;
       line := 1;
-      Parse.start Lex.token (Lexing.from_channel (open_in name)) in
+      Parse.start Lex.token (Lexing.LexBuffer<_>.FromTextReader (new StreamReader (!file))) in
     let includes = List.map parse_file (!include_files) in
 
     line := 1;
-    let p = Parse.start Lex.token (Lexing.from_channel stdin) in
-    let env = build_env ((List.flatten includes) @ p) in
+    let p = Parse.start Lex.token (Lexing.LexBuffer<_>.FromTextReader (stdin)) in
+    let env = build_env ((List.concat includes) @ p) in
     let (includes2, p) =
-      (global_alias_decls env (List.flatten includes), global_alias_decls env p) in
+      (global_alias_decls env (List.concat includes), global_alias_decls env p) in
     let env = build_env (includes2 @ p) in
     let p = expand_conjuncts_decls env (!expand_depth) p in
     let p = compile_decls env p in
@@ -783,5 +788,3 @@ let main (argv) =
 ;;
 
 let () = main (System.Environment.GetCommandLineArgs ())
-
-

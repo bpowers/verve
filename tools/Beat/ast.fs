@@ -1,13 +1,17 @@
+namespace Ast
+
+open Microsoft.FSharp.Math
+open System.Numerics
+
 type id = string
 type loc = int
-type bigint = Microsoft.FSharp.Math.bigint
 
 type btyp =
 | BInt | BBool
 | BArray of btyp list * btyp
 | BNamedType of id
 
-type buop = 
+type buop =
 | BNot | BNeg | BOld
 
 type bbop =
