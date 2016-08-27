@@ -15,7 +15,7 @@ endif
 %: SCCS/s.%
 
 
-BUILD         = $(ROOT)/../base/build
+BUILD         = $(ROOT)/build
 OBJROOT       = $(ROOT)/obj
 LIBROOT       = $(ROOT)/lib
 BINROOT       = $(ROOT)/bin
@@ -34,7 +34,8 @@ BEAT_EXE      = $(BINROOT)/beat.exe
 BOOGIEASM_EXE = $(BINROOT)/boogieasm.exe
 BEAT          = mono $(BEAT_EXE)
 BOOGIEASM     = mono $(BOOGIEASM_EXE)
-BOOGIE        = boogie
+#BOOGIE        = boogie /restartProver /noinfer
+BOOGIE        = wine ~/src/singularity/verify/build/boogie1/Boogie.exe /restartProver /noinfer
 MKDIR         = mkdir -p
 RM            = rm -f
 FSC           = fsharpc
