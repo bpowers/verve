@@ -7,24 +7,27 @@ ROOT = ../..
 include $(ROOT)/build.mk
 
 SRC = .
-OBJ = $(OBJROOT)/tools/Beat
+OBJ = $(OBJROOT)/tools/BoogieAsm
 BIN = $(BINROOT)
 
-BEAT_SOURCES = \
+BOOGIE_SOURCES = \
 	$(SRC)/compat.fs \
 	$(SRC)/ast.fs \
 	$(SRC)/parse_util.fs \
 	$(OBJ)/parse.fs \
 	$(OBJ)/lex.fs \
+	$(SRC)/emit_bpl.fs \
 	$(SRC)/arg.fs \
 	$(SRC)/main.fs
 
 INCLUDES = -I $(PPACK_CORE)/Lib/Net40
 LIBS     = -r FSharp.PowerPack.dll
 
-all: beat
+all: boogieasm symdiffmerge
 
-beat: $(BIN)/beat.exe
+boogieasm: $(BIN)/boogieasm.exe
+
+symdiffmerge: $(BIN)/symdiffmerge.exe
 
 $(PPACK):
 	@echo "  NUGET   FSPowerPack"
@@ -48,9 +51,18 @@ $(OBJ)/parse.fsi $(OBJ)/parse.fs: $(SRC)/parse.fsy $(OBJ) $(FSYACC_BIN)
 	$(FSYACC) --module Parse -v $(SRC)/parse.fsy -o $(OBJ)/parse.fs >/dev/null
 	touch $(OBJ)
 
-$(BIN)/beat.exe: $(BEAT_SOURCES) $(BIN) $(PPACK)
-	@echo "  FSC     beat.exe"
-	$(FSC) --nologo --standalone --mlcompatibility -O $(BEAT_SOURCES) -o $(BIN)/beat.exe $(INCLUDES) $(LIBS)
+$(BIN)/boogieasm.exe: $(BOOGIE_SOURCES) $(PPACK)
+	@echo "  FSC     boogieasm.exe"
+	$(FSC) --nologo --standalone --mlcompatibility -O $(BOOGIE_SOURCES) -o $(BIN)/boogieasm.exe $(INCLUDES) $(LIBS)
 	touch $(OBJ)
 
-.PHONY: all
+$(BIN)/symdiffmerge.exe: SymdiffMerge.cs
+	@echo "  CSC     symdiffmerge.exe"
+	$(CSC) /debug+ /out:$(BIN)/symdiffmerge.exe SymdiffMerge.cs
+	touch $(OBJ)
+
+clean:
+	$(RM) $(BIN)/boogieasm.exe
+	$(RM) $(BIN)/symdiffmerge.exe
+	$(RM) $(OBJ)/*.fs
+	$(RM) $(OBJ)/*.fsi
