@@ -4,8 +4,6 @@ include $(ROOT)/build.mk
 
 OBJ    = $(OBJROOT)/Checked/Nucleus/Base
 
-SPEC   = ../../../Trusted/Spec
-
 SPECS  = $(SPEC)/Base_i.bpl $(SPEC)/Memory_i.bpl $(SPEC)/Stacks_i.bpl $(SPEC)/Assembly_i.bpl $(SPEC)/Bartok_i.bpl $(SPEC)/Interrupts_i.bpl $(SPEC)/Io_i.bpl
 AXIOMS = $(SPEC)/Base_axioms.bpl $(SPEC)/Memory_axioms.bpl $(SPEC)/Stacks_axioms.bpl $(SPEC)/Assembly_axioms.bpl $(SPEC)/Bartok_axioms.bpl
 
