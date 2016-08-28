@@ -27,17 +27,28 @@ OBJS = \
 
 #OBJS          = $(SPEC_OBJS) $(SOURCE_OBJS)
 
-all: $(OBJ)/nucleus_ms.asm $(OBJ)/nucleus_cp.asm
+all: build-ms build-cp
 
-Base GC Main:
-	make -C $@
+$(OBJ)/nucleus_ms.asm:
+	make -C Base build-ms
+	make -C GC build-ms
+	make -C Main build-ms
+	$(BOOGIEASM) >$(OBJ)/nucleus_ms.asm $(OBJS) $(OBJ)/Main/EntryMS
 
-$(OBJ)/nucleus_ms.asm: #Base GC Main
-#	$(BOOGIEASM) >$(OBJ)/nucleus_ms.asm $(OBJS) $(OBJ)/Main/EntryMS.bpl
-	$(BOOGIEASM) $(OBJS) $(OBJ)/Main/EntryMS
+$(OBJ)/nucleus_cp.asm:
+	make -C Base build-cp
+	make -C GC build-cp
+	make -C Main build-cp
+	$(BOOGIEASM) >$(OBJ)/nucleus_cp.asm $(OBJS) $(OBJ)/Main/EntryCP
 
-$(OBJ)/nucleus_cp.asm: #Base GC Main
-#	$(BOOGIEASM) >$(OBJ)/nucleus_cp.asm $(OBJS) $(OBJ)/Main/EntryCP.bpl
-	$(BOOGIEASM) $(OBJS) $(OBJ)/Main/EntryCP
+build-ms: $(OBJ)/nucleus_ms.asm
 
-.PHONY: all Base GC Main
+build-cp: $(OBJ)/nucleus_cp.asm
+
+clean:
+	make -C Base clean
+	make -C GC clean
+	make -C Main clean
+	$(RM) $(OBJ)/nucleus_cp.asm $(OBJ)/nucleus_ms.asm
+
+.PHONY: all clean Base GC Main

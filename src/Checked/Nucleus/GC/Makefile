@@ -38,12 +38,16 @@ build: $(OBJ)
 	$(BOOGIE) >$(OBJ)/Reach.v                      $(SPECS) $(AXIOMS) $(BASES) $(OBJ)/Reach_i.bpl $(OBJ)/Reach.bpl
 	$(BOOGIE) >$(OBJ)/Common_i.v                   $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl
 	$(BOOGIE) >$(OBJ)/Common.v                     $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/Common.bpl
+
+build-ms: build
 	$(BOOGIE) >$(OBJ)/MarkSweepCollector_i.v       $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/MarkSweepCollector_i.bpl
 	$(BOOGIE) >$(OBJ)/MarkSweepCollector.v         $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/MarkSweepCollector_i.bpl $(OBJ)/MarkSweepCollector.bpl
+
+build-cp: build
 	$(BOOGIE) >$(OBJ)/CopyingCollector_i.v         $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/CopyingCollector_i.bpl
 	$(BOOGIE) >$(OBJ)/CopyingCollector.v           $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/CopyingCollector_i.bpl $(OBJ)/CopyingCollector.bpl
 
 clean:
 	$(RM) $(OBJ)/*.bpl $(OBJ)/*.v
 
-.PHONY: all build clean
+.PHONY: all build build-cp build-ms clean

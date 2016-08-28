@@ -12,7 +12,7 @@ all: build
 $(OBJ):
 	$(MKDIR) $(OBJ)
 
-build: $(OBJ)
+build build-cp build-ms: $(OBJ)
 	cp Util_i.bpl $(OBJ)/Util_i.bpl
 	$(BEAT) >$(OBJ)/Util.bpl <Util.beat
 
