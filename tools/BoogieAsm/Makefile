@@ -16,7 +16,6 @@ BOOGIE_SOURCES = \
 	$(SRC)/parse_util.fs \
 	$(OBJ)/parse.fs \
 	$(OBJ)/lex.fs \
-	$(SRC)/emit_bpl.fs \
 	$(SRC)/arg.fs \
 	$(SRC)/main.fs
 
