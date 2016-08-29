@@ -12,6 +12,7 @@ internal class IoThread: ThreadStart
 {
     public override void Run()
     {
+        System.DebugStub.Print(" PLASMA Verve.  ");
         System.DebugStub.Print("IoThread@" + Kernel.CurrentThread + ". ");
         byte[] pciDmaBuffer;
         try {
