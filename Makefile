@@ -8,7 +8,7 @@ tools:
 	make -C tools/Beat beat
 	make -C tools/BoogieAsm boogieasm
 
-nucleus: tools
+nucleus:
 	make -C src/Trusted/Spec build-cp
 	make -C src/Checked/Nucleus build-cp
 
