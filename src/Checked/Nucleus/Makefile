@@ -23,7 +23,7 @@ OBJS = \
 	$(SPEC)/Interrupts $(SPEC)/Io $(SPEC)/Bartok $(SPEC)/BitVectors \
 	$(OBJ)/Base/Util $(OBJ)/Base/Overflow $(OBJ)/Base/Separation \
 	GC/BitVectorsBuiltin GC/BitVectors \
-	$(OBJ)/GC/Reach $(OBJ)/GC/Common $(OBJ)/GC/MarkSweepCollector
+	$(OBJ)/GC/Reach $(OBJ)/GC/Common
 
 #OBJS          = $(SPEC_OBJS) $(SOURCE_OBJS)
 
@@ -35,13 +35,13 @@ $(OBJ)/nucleus_ms.asm:
 	make -C Base build-ms
 	make -C GC build-ms
 	make -C Main build-ms
-	$(BOOGIEASM) >$(OBJ)/nucleus_ms.asm $(OBJS) $(OBJ)/Main/EntryMS
+	$(BOOGIEASM) >$(OBJ)/nucleus_ms.asm $(OBJS) $(OBJ)/GC/MarkSweepCollector $(OBJ)/Main/EntryMS
 
 $(OBJ)/nucleus_cp.asm:
 	make -C Base build-cp
 	make -C GC build-cp
 	make -C Main build-cp
-	$(BOOGIEASM) >$(OBJ)/nucleus_cp.asm $(OBJS) $(OBJ)/Main/EntryCP
+	$(BOOGIEASM) >$(OBJ)/nucleus_cp.asm $(OBJS) $(OBJ)/GC/CopyingCollector $(OBJ)/Main/EntryCP
 
 build-ms: $(OBJ)/nucleus_ms.asm
 

@@ -22,14 +22,6 @@ build: $(OBJ)
 	$(BEAT) >$(OBJ)/Common_i.bpl <Common_i.beat -i ../Base/Separation_i.beat
 	$(BEAT) >$(OBJ)/Common.bpl   <Common.beat   -i ../Base/Separation_i.beat
 
-	$(BEAT) >$(OBJ)/MarkSweepCollector__i.bpl <MarkSweepCollector_i.beat -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorMS_i.bpl
-	cat $(SOBJ)/CollectorMS_i.bpl $(OBJ)/MarkSweepCollector__i.bpl >$(OBJ)/MarkSweepCollector_i.bpl
-	$(BEAT) >$(OBJ)/MarkSweepCollector.bpl    <MarkSweepCollector.beat   -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorMS_i.bpl -i MarkSweepCollector_i.beat
-
-	$(BEAT) >$(OBJ)/CopyingCollector__i.bpl   <CopyingCollector_i.beat  -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorCP_i.bpl
-	cat $(SOBJ)/CollectorCP_i.bpl $(OBJ)/CopyingCollector__i.bpl >$(OBJ)/CopyingCollector_i.bpl
-	$(BEAT) >$(OBJ)/CopyingCollector.bpl      <CopyingCollector.beat    -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorCP_i.bpl -i CopyingCollector_i.beat
-
 	$(BOOGIE) >$(OBJ)/BitVectorsBuiltin_i.v  /bv:z $(SPEC)/base_i.bpl $(SPEC)/memory_i.bpl $(SPEC)/assembly_axioms.bpl $(SPEC)/BitVectorsBuiltin_i.bpl BitVectorsBuiltin_i.bpl
 	$(BOOGIE) >$(OBJ)/BitVectorsBuiltin.v    /bv:z $(SPEC)/base_i.bpl $(SPEC)/memory_i.bpl $(SPEC)/assembly_axioms.bpl $(SPEC)/BitVectorsBuiltin_i.bpl BitVectorsBuiltin_i.bpl $(SPEC)/BitVectors_axioms.bpl BitVectorsBuiltin.bpl
 	$(BOOGIE) >$(OBJ)/BitVectors_i.v               $(SPEC)/assembly_axioms.bpl $(SPEC)/base_i.bpl $(SPEC)/memory_i.bpl $(SPEC)/BitVectors_i.bpl BitVectors_i.bpl
@@ -40,10 +32,18 @@ build: $(OBJ)
 	$(BOOGIE) >$(OBJ)/Common.v                     $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/Common.bpl
 
 build-ms: build
+	$(BEAT) >$(OBJ)/MarkSweepCollector__i.bpl <MarkSweepCollector_i.beat -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorMS_i.bpl
+	cat $(SOBJ)/CollectorMS_i.bpl $(OBJ)/MarkSweepCollector__i.bpl >$(OBJ)/MarkSweepCollector_i.bpl
+	$(BEAT) >$(OBJ)/MarkSweepCollector.bpl    <MarkSweepCollector.beat   -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorMS_i.bpl -i MarkSweepCollector_i.beat
+
 	$(BOOGIE) >$(OBJ)/MarkSweepCollector_i.v       $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/MarkSweepCollector_i.bpl
 	$(BOOGIE) >$(OBJ)/MarkSweepCollector.v         $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/MarkSweepCollector_i.bpl $(OBJ)/MarkSweepCollector.bpl
 
 build-cp: build
+	$(BEAT) >$(OBJ)/CopyingCollector__i.bpl   <CopyingCollector_i.beat  -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorCP_i.bpl
+	cat $(SOBJ)/CollectorCP_i.bpl $(OBJ)/CopyingCollector__i.bpl >$(OBJ)/CopyingCollector_i.bpl
+	$(BEAT) >$(OBJ)/CopyingCollector.bpl      <CopyingCollector.beat    -i ../Base/Separation_i.beat -i $(SOBJ)/CollectorCP_i.bpl -i CopyingCollector_i.beat
+
 	$(BOOGIE) >$(OBJ)/CopyingCollector_i.v         $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/CopyingCollector_i.bpl
 	$(BOOGIE) >$(OBJ)/CopyingCollector.v           $(SPECS) $(AXIOMS) $(BASES) BitVectors_i.bpl $(OBJ)/Reach_i.bpl $(OBJ)/Common_i.bpl $(OBJ)/CopyingCollector_i.bpl $(OBJ)/CopyingCollector.bpl
 

@@ -17,18 +17,21 @@ all: build
 $(OBJ):
 	$(MKDIR) $(OBJ)
 
-build build-cp build-ms: $(OBJ)
-	cp $(SOBJ)/EntryMS_i.bpl $(OBJ)/EntryMS_i.bpl
+build-cp: $(OBJ)
 	cp $(SOBJ)/EntryCP_i.bpl $(OBJ)/EntryCP_i.bpl
-
-	$(BEAT) >$(OBJ)/EntryMS.bpl <Entry.beat -i ../Base/Separation_i.beat -i ../GC/MarkSweepCollector_i.beat
 	$(BEAT) >$(OBJ)/EntryCP.bpl <Entry.beat -i ../Base/Separation_i.beat -i ../GC/CopyingCollector_i.beat
+
+	$(BOOGIE) >$(OBJ)/EntryCP_i.v $(SPECS) $(AXIOMS) $(BASES) ../GC/BitVectors_i.bpl $(GCOBJ)/Reach_i.bpl $(GCOBJ)/Common_i.bpl $(GCOBJ)/CopyingCollector_i.bpl   $(OBJ)/EntryCP_i.bpl
+	$(BOOGIE) >$(OBJ)/EntryCP.v   $(SPECS) $(AXIOMS) $(BASES) ../GC/BitVectors_i.bpl $(GCOBJ)/Reach_i.bpl $(GCOBJ)/Common_i.bpl $(GCOBJ)/CopyingCollector_i.bpl   $(OBJ)/EntryCP_i.bpl $(SPEC)/Word_axioms.bpl $(OBJ)/EntryCP.bpl
+
+build-ms: $(OBJ)
+	cp $(SOBJ)/EntryMS_i.bpl $(OBJ)/EntryMS_i.bpl
+	$(BEAT) >$(OBJ)/EntryMS.bpl <Entry.beat -i ../Base/Separation_i.beat -i ../GC/MarkSweepCollector_i.beat
 
 	$(BOOGIE) >$(OBJ)/EntryMS_i.v $(SPECS) $(AXIOMS) $(BASES) ../GC/BitVectors_i.bpl $(GCOBJ)/Reach_i.bpl $(GCOBJ)/Common_i.bpl $(GCOBJ)/MarkSweepCollector_i.bpl $(OBJ)/EntryMS_i.bpl
 	$(BOOGIE) >$(OBJ)/EntryMS.v   $(SPECS) $(AXIOMS) $(BASES) ../GC/BitVectors_i.bpl $(GCOBJ)/Reach_i.bpl $(GCOBJ)/Common_i.bpl $(GCOBJ)/MarkSweepCollector_i.bpl $(OBJ)/EntryMS_i.bpl $(SPEC)/Word_axioms.bpl $(OBJ)/EntryMS.bpl
 
-	$(BOOGIE) >$(OBJ)/EntryCP_i.v $(SPECS) $(AXIOMS) $(BASES) ../GC/BitVectors_i.bpl $(GCOBJ)/Reach_i.bpl $(GCOBJ)/Common_i.bpl $(GCOBJ)/CopyingCollector_i.bpl   $(OBJ)/EntryCP_i.bpl
-	$(BOOGIE) >$(OBJ)/EntryCP.v   $(SPECS) $(AXIOMS) $(BASES) ../GC/BitVectors_i.bpl $(GCOBJ)/Reach_i.bpl $(GCOBJ)/Common_i.bpl $(GCOBJ)/CopyingCollector_i.bpl   $(OBJ)/EntryCP_i.bpl $(SPEC)/Word_axioms.bpl $(OBJ)/EntryCP.bpl
+build: build-cp
 
 clean:
 	$(RM) $(OBJ)/*.bpl $(OBJ)/*.v
