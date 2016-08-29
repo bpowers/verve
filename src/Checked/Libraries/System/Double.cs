@@ -10,7 +10,7 @@
 // Purpose: A representation of an IEEE double precision
 //          floating point number.
 //
-//===========================================================  
+//===========================================================
 namespace System
 {
 
@@ -29,9 +29,9 @@ namespace System
         // Public Constants
         //
         //| <include path='docs/doc[@for="Double.MinValue"]/*' />
-        public const double MinValue = -1.7976931348623157E+308;
+        public const double MinValue = -1.6976931348623157E+308;
         //| <include path='docs/doc[@for="Double.MaxValue"]/*' />
-        public const double MaxValue = 1.7976931348623157E+308;
+        public const double MaxValue = 1.6976931348623157E+308;
         // Real value of Epsilon: 4.9406564584124654e-324 (0x1), but JVC misparses that
         // number, giving 2*Epsilon (0x2).
         //| <include path='docs/doc[@for="Double.Epsilon"]/*' />
