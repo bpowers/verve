@@ -13,5 +13,6 @@ nucleus: tools
 	make -C src/Checked/Nucleus build-cp
 
 project: nucleus
+	./build.sh
 
 .PHONY: all project nucleus tools
