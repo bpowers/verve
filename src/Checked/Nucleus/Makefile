@@ -27,7 +27,9 @@ OBJS = \
 
 #OBJS          = $(SPEC_OBJS) $(SOURCE_OBJS)
 
-all: build-ms build-cp
+all: build
+
+build: build-ms
 
 $(OBJ)/nucleus_ms.asm:
 	make -C Base build-ms

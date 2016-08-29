@@ -9,7 +9,8 @@ tools:
 	make -C tools/BoogieAsm boogieasm
 
 nucleus: tools
-	make -C src/Checked/Nucleus
+	make -C src/Trusted/Spec build-cp
+	make -C src/Checked/Nucleus build-cp
 
 project: nucleus
 
