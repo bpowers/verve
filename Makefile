@@ -12,7 +12,12 @@ nucleus: tools
 	make -C src/Trusted/Spec build-cp
 	make -C src/Checked/Nucleus build-cp
 
-project: nucleus
+project:
 	./build.sh
+
+bin/safeos_cp.iso: project
+
+run:
+	qemu-system-x86_64 -boot d -cdrom bin/safeos_cp.iso -m 512
 
 .PHONY: all project nucleus tools

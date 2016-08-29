@@ -1,4 +1,7 @@
 *~
-
 /lib
 /bin
+/obj/Checked/
+/obj/Trusted/Spec/
+/obj/iso_cp/
+/obj/tools/
