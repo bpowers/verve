@@ -21,20 +21,7 @@ KSRC=$(echo src/Checked/Kernel/*.cs \
      src/Checked/Libraries/System/Collections/*.cs \
      src/Checked/Libraries/System/Text/*.cs \
      src/Checked/Libraries/System/IO/*.cs \
-     src/Checked/Libraries/System/Globalization/*.cs \
-     src/Checked/Libraries/System/Net/IP/*.cs \
-     src/Checked/Libraries/System/Net/Sockets/*.cs \
-     src/Checked/Libraries/System/Net/*.cs \
-     src/Checked/Libraries/NetStack/Lib/*.cs \
-     src/Checked/Libraries/NetStack/Common/*.cs \
-     src/Checked/Libraries/NetStack/Events/*.cs \
-     src/Checked/Libraries/NetStack2/*.cs \
-     src/Checked/Libraries/NetStack2/TCP/*.cs \
-     src/Checked/Libraries/NetStack2/Protocol/*.cs \
-     src/Checked/Libraries/NetStack2/NetDrivers/*.cs \
-     src/Checked/Libraries/NetStack2/Nic/*.cs \
-     src/Checked/Libraries/NetStack2/Private/*.cs \
-     src/Checked/Drivers/Network/Intel/*.cs | sed -e 's/\//\\/g')
+     src/Checked/Libraries/System/Globalization/*.cs | sed -e 's/\//\\/g')
 
 wine $CSC /main:Kernel /nostdlib /debug /optimize /nowarn:169 /nowarn:649 /nowarn:3021 /nowarn:626 /nowarn:414 /out:$MANAGED_KERNEL_EXE $KSRC
 
