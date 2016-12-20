@@ -428,6 +428,9 @@ public class Kernel
                 t = readyQueue.Dequeue();
 
                 // Garbage collect, then we're ready to go.
+                CompilerIntrinsics.Sti();
+                System.DebugStub.Print("GarbageCollecting. ");
+                CompilerIntrinsics.Cli();
                 NucleusCalls.GarbageCollect();
                 collectionRequested = false;
 
